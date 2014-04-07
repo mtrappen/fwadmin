@@ -10,12 +10,12 @@ def validate_port(port_range):
     if not start.isdigit():
         raise ValidationError(
             _("Port or Range must be a single port or a range."))
-    if end and not end.isdigit():
+    if (end and not end.isdigit()) or (sep and not end):
         raise ValidationError(_("End port must be a number"))
     if int(start) > 65535 or (end and int(end) > 65535):
         raise ValidationError(
             _("Port can not be greater than 65535"))
-    if end and int(start) >= int(end):
+    if end and int(start) > int(end):
         raise ValidationError(
             _("Port order incorrect"))
 
@@ -25,5 +25,5 @@ def validate_from_net(from_net):
         try:
             net = netaddr.IPNetwork(from_net)
             net  # pyflakes
-        except netaddr.AddrFormatError:
+        except (netaddr.AddrFormatError, ValueError):
             raise ValidationError(_("Invalid network address"))
